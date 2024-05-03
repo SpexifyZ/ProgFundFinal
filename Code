@@ -1,1 +1,1622 @@
-Working on it
+import pickle
+import os
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+
+# The foundation class for all employees
+class Employee:
+    # Runs an Employee object
+    def __init__(
+            self,
+            full_name,
+            emp_id,
+            department,
+            job_title,
+            basic_salary,
+            age,
+            dob,
+            passportinfo,
+            manager_id=None, 
+    ):
+        self.full_name = full_name
+        self.emp_id = emp_id
+        self.department = department
+        self.job_title = job_title
+        self.basic_salary = basic_salary
+        self.age = age
+        self.dob = dob
+        self.passportinfo = passportinfo
+        self.manager_id = manager_id
+
+
+# Manager class
+class Manager(Employee):
+    # Adds more attributes to Employee for a Manager's job
+    def __init__(self, team_size, department_budget, *args, **kwargs):  # inherits from employee
+        super().__init__(*args, **kwargs)  # Calls the super parent of the Employee class
+        self.team_size = team_size
+        self.department_budget = department_budget
+
+
+# Salesperson class
+class Salesperson(Employee):
+    # adds more attributes for Employee to a Salesperson's job
+    def __init__(self, sales_target, commission_rate, *args, **kwargs):  # inherits from employee
+        super().__init__(*args, **kwargs)  # Calls the constructor of the Employee class
+        self.sales_target = sales_target  # The sales target 
+        self.commission_rate = commission_rate  # Commission rate 
+
+
+# Photographer class
+class Photographer(Employee):
+    # Adds more attributes to Employee for a hired Photographer
+    def __init__(self, assignVenue):
+        self.assignVenue = assignVenue  # The venue that the photographer is assigned to
+
+
+
+# Event class
+class Event:
+    # Runs an event
+    def __init__(
+            self,
+            eventid,
+            eventtype,
+            theme,
+            date,
+            time,
+            duration,
+            venue_address,
+            clientid,
+            guestlist,
+            catering_company,
+            cleaning_company,
+            decorations_company,
+            entertainment_company,
+            furniture_supply_company,
+            invoice,
+    ):
+        self.eventid = eventid
+        self.eventtype = eventtype  # Type of the event
+        self.theme = theme  # Theme of the event
+        self.date = date  # Date of the event
+        self.time = time  # Time the event starts
+        self.duration = duration  # Duration of the event
+        self.venue_address = venue_address  # Address of the venue
+        self.clientid = clientid  # Client ID
+        self.guestlist = guestlist  # List of guests
+        # the companies that are offering their services
+        self.catering_company = catering_company
+        self.cleaning_company = cleaning_company
+        self.decorations_company = decorations_company
+        self.entertainment_company = entertainment_company
+        self.furniture_supply_company = furniture_supply_company
+        self.invoice = invoice 
+
+# Client class
+class Client:
+    # Runs a Client object with client information like client id,full name and more.
+    def __init__(self, clientid, full_name, address, contactinfo, budget):
+        self.clientid = clientid  # ID number  for the client
+        self.full_name = full_name  # Full name of the client
+        self.address = address  # Address of the client
+        self.contactinfo = contactinfo  # Contact Information for the client
+        self.budget = budget  # Budget the client has for events
+
+
+# Guest class
+class Guest:
+    # Runs a Guest object with guest details like guest id, full name and more
+    def __init__(self, guestid, full_name, address, contactinfo):
+        self.guestid = guestid  # ID number  for the guest
+        self.full_name = full_name  # Full name of the guest
+        self.address = address  # Address of the guest
+        self.contactinfo = contactinfo  # Contact Information for the guest
+
+
+# Supplier class
+class Supplier:
+    # Runs a Supplier object with supplier information, like supplier id, full name and more.
+    def __init__(self, supplier_id, full_name, address, contactinfo, service_provided):
+        self.supplier_id = supplier_id  # ID number  for the supplier
+        self.full_name = full_name  # Full name of the supplier company
+        self.address = address  # Address of the supplier
+        self.contactinfo = contactinfo  # Contact Information for the supplier
+        self.service_provided = service_provided  # Services that the supplier provides
+
+
+# Venue class
+class Venue:
+    # Runs a Venue object with venue information like venue name,ID and more.
+    def __init__(self, idvenue, venue_name, address, contact, min_guests, max_guests):
+        self.idvenue = idvenue  # ID number for the venue
+        self.venue_name = venue_name  # Full name of the venue
+        self.address = address  # Address of the venue
+        self.contact = contact  # Contact information for the venue
+        self.min_guests = min_guests  # minimum guests that the venue can have
+        self.max_guests = max_guests  # maximum guests that the venue can have
+
+
+# Service class
+class Service:
+    # Runs a Service object with information about the service issued.
+    def __init__(self, service_id, full_name, description):
+        self.service_id = service_id  # ID number for the service
+        self.full_name = full_name  # Full name of the service
+        self.description = description  # Description of the service.
+
+
+# Invoice class
+class Invoice:
+    # Runs an Invoice object with billing information for services given.
+    def __init__(self, invoice_id, amount, details):
+        self.invoice_id = invoice_id  # ID number  for the invoice
+        self.amount = amount  # The amount billed in the invoice
+        self.details = details  # details and description of the invoice
+
+
+# adds an employee's data to a persistent file.
+def add_employee(employee_data):
+    # Open the 'employees.pkl' file in append-binary mode
+    # This allows us to add new employee data without overwriting existing data.
+    try:
+        with open('employees.pkl', 'ab') as file:
+            # Use pickle to serialize the employee_data object and save it into the file.
+            pickle.dump(employee_data, file)
+    except Exception as e:
+        # prints out if there was an error.
+        print(f"An error occurred while adding an employee: {e}")
+
+
+# displays employee information by their ID number.
+def display_emp_info(emp_id):
+    # opens the 'employees.pkl' file as read-binary mode to read employee data.
+    try:
+        with open('employees.pkl', 'rb') as file:
+            # since the amount fo employees are unknown, it wil loop indefinitely 
+            while True:
+                try:
+                    # deserializes the next employee
+                    employee = pickle.load(file)
+                    # it will print the employee's information if the current employee has the same matching ID
+                    if employee.id_number == emp_id:
+                        print(f"Employee Full name: {employee.full_name}")
+                        print(f"Department: {employee.department}")
+                        # Exit the function after finding and printing the desired employee.
+                        return
+                except EOFError:
+                    break
+        # prints if the employee with the given ID was not found in the file.
+        print("Employee not found.")
+    except Exception as e:
+        # prints out if there was an error.
+        print(f"An error occurred while retrieving employee details: {e}")
+
+
+# ... Similar structure for the remaining functions add_event, display_event_info, etc.
+
+# Adding an event to the system
+def add_event(event_data):
+    # open the 'events.pkl' file as ab or append-binary to add a new event.
+    try:
+        with open('events.pkl', 'ab') as file:
+            # Serialize the event_data object and append it to the 'events.pkl' file.
+            pickle.dump(event_data, file)
+    except Exception as e:
+        # Print errors that may happen
+        print(f"An error occurred while adding an event: {e}")
+
+
+# display information of an event by using the event's ID
+def display_event_info(eventid):
+    # open the 'events.pkl' file as read-binary to find an event.
+    try:
+        with open('events.pkl', 'rb') as file:
+            # loop throughout the event to find the one that is being searched up.
+            while True:
+                try:
+                    # deserialize the next event object
+                    event = pickle.load(file)
+                    # checks if the current event's ID matches the one being searched for
+                    if event.eventid == eventid:
+                        # prints the event's type and theme if there was an event id that matched
+                        print(f"Event Type: {event.eventtype}")
+                        print(f"Theme: {event.theme}")
+                        return
+                except EOFError:
+                    # breaks the loop if the event was not found
+                    break
+        # tells the user that the event that they are looking for is not found
+        print("Event not found.")
+    except Exception as e:
+        # print errors that may happen
+        print(f"An error occurred while retrieving event details: {e}")
+
+
+# display the information of a client by their ID number.
+def display_client_info(clientid):
+    # Open the 'clients.pkl' file in read-binary mode to find a client's information.
+    try:
+        with open('clients.pkl', 'rb') as file:
+            # Iterate over the serialized client objects in the file.
+            while True:
+                try:
+                    # Deserialize the next client object from the file.
+                    client = pickle.load(file)
+                    # If the deserialized client's ID matches the given ID, print their information.
+                    if client.clientid == clientid:
+                        print(f"Client Full name: {client.full_name}")
+                        print(f"Client Address: {client.address}")
+                        # Exit the function after displaying the client.
+                        return
+                except EOFError:
+                    #  breaks out of the loop if no more objects are found in the file
+                    break
+        # tells the user if the client was not found
+        print("Client not found.")
+    except Exception as e:
+        # prints any errors or exceptions that may happen
+        print(f"An error occurred while retrieving client details: {e}")
+
+
+# adds a supplier's data to the system.
+def add_supplier(supplier_data):
+    # open the 'suppliers.pkl' file as append-binary.
+    try:
+        with open('suppliers.pkl', 'ab') as file:
+            # Serialize the supplier_data object and save it into the file.
+            pickle.dump(supplier_data, file)
+    except Exception as e:
+        # prints out if there was an error.
+        print(f"An error occurred while adding a supplier: {e}")
+
+
+# adds a guest's data to the system.
+def add_guest(guest_data):
+    # Open the 'guests.pkl' file in append-binary mode.
+    try:
+        with open('guests.pkl', 'ab') as file:
+            # serializes the guest_data object and save it into the file.
+            pickle.dump(guest_data, file)
+    except Exception as e:
+        # prints out if there was an error.
+        print(f"An error occurred while adding a guest: {e}")
+
+
+# adds a venue's data to the system.
+def add_venue(venue_data):
+    # opens 'venues.pkl' file in append-binary mode.
+    try:
+        with open('venues.pkl', 'ab') as file:
+            # serializes the venue_data object and saves to the file.
+            pickle.dump(venue_data, file)
+    except Exception as e:
+        # prints out if there was an error.
+        print(f"An error occurred while adding a venue: {e}")
+
+
+# displays information of a supplier by their ID number .
+def display_supplier_info(supplier_id):
+    # Open the 'suppliers.pkl' file in read-binary mode to find supplier information.
+    try:
+        with open('suppliers.pkl', 'rb') as file:
+            # loop through the file to deserialize supplier objects.
+            while True:
+                try:
+                    # deserialize the next supplier object
+                    supplier = pickle.load(file)
+                    # Check if the deserialized supplier's ID matches the given ID.
+                    if supplier.supplier_id == supplier_id:
+                        # prints the supplier's Full name and address.
+                        print(f"Supplier Full name: {supplier.full_name}")
+                        print(f"Supplier Address: {supplier.address}")
+                        return
+                except EOFError:
+                    #Breaks the loop
+                    break
+        # tells the user if the supplier with the given ID is not found.
+        print("Supplier not found.")
+    except Exception as e:
+        # Print any errors or exceptions that might happen
+        print(f"An error occurred while retrieving supplier details: {e}")
+
+
+# Displays information of a guest by their ID number.
+def display_guestinfo(guestid):
+    # Open the 'guests.pkl' file in read-binary mode to search for a guest.
+    try:
+        with open('guests.pkl', 'rb') as file:
+            # Loop over all guests in the file to find the one with the matching ID.
+            while True:
+                try:
+                    # Deserialize the next guest object from the file.
+                    guest = pickle.load(file)
+                    # Check if the current guest's ID matches the one we're looking for.
+                    if guest.guestid == guestid:
+                        # Print the guest's Full name and address.
+                        print(f"Guest Full name: {guest.full_name}")
+                        print(f"Guest Address: {guest.address}")
+                        # Exit after displaying the guest information.
+                        return
+                except EOFError:
+                    # If we reach the end of the file without finding the guest, break the loop.
+                    break
+        # Inform the user if the guest with the given ID doesn't exist.
+        print("Guest not found.")
+    except Exception as e:
+        # prints any errors or exceptions that may happen
+        print(f"An error occurred while retrieving guest details: {e}")
+
+
+# Displays information of a venue by its ID number.
+def display_venue_info(idvenue):
+    # Open the 'venues.pkl' file in read-binary mode to find a venue's information.
+    try:
+        with open('venues.pkl', 'rb') as file:
+            # in the file, it iterates over the serialized venue objects
+            while True:
+                try:
+                    # from the file, it deserializes the next venue object
+                    venue = pickle.load(file)
+                    # if the deserialized venue's ID matches the given ID, it prints the information.
+                    if venue.idvenue == idvenue:
+                        print(f"Venue Full name: {venue.venue_name}")
+                        print(f"Venue Address: {venue.address}")
+                        # exits after displaying the venue.
+                        return
+                except EOFError:
+                    break
+        print("Venue not found.")
+    except Exception as e:
+        print(f"An error occurred while retrieving venue details: {e}")
+
+
+# START OF GUI
+CLIENT_FILENAME = "clients.bin"
+
+
+class ClientManager:
+    # load existing clients from storage when running
+    def __init__(self):
+        self.clients = self.load_clients()  # to get client data.
+
+    def load_clients(self):
+        # checks if the client data file exists and returns the content as a dictionary.
+        if os.path.exists(CLIENT_FILENAME):
+            with open(CLIENT_FILENAME, "rb") as file:
+                # Deserialize the client data from the file and return it.
+                return pickle.load(file)
+        # returns an empty dictionary if the file does not exist
+        return {}
+
+    def save_clients(self):
+        # Serializes and saves the client data to a file.
+        with open(CLIENT_FILENAME, "wb") as file:
+            # Serialize the dictionary of clients and write it to the file.
+            pickle.dump(self.clients, file)
+
+    def add_client(self, client):
+        # Adds a new client to the client dictionary.
+        # If the client ID already exists, raise an exception to prevent duplicates.
+        if client.clientid in self.clients:
+            raise Exception("Client ID already exists.")
+        # Add the new client to the dictionary.
+        self.clients[client.clientid] = client
+        # Save the updated client dictionary to the file.
+        self.save_clients()
+
+    def modify_client(self, clientid, **kwargs):
+        # changes and modifies a client's attributes based on given keyword arguments.
+        #prints exception if client id is not found
+        if clientid not in self.clients:
+            raise Exception("Client not found.")
+        # Get the client object from the dictionary.
+        client = self.clients[clientid]
+        # For Loops through the keyword arguments and updates the client's attributes.
+        for key, value in kwargs.items():
+            # Check if the client object has the attribute to be modified.
+            if hasattr(client, key):
+                # Set the attribute to the new value provided.
+                setattr(client, key, value)
+            else:
+                # prints exception if the attribute is invalid.
+                raise Exception(f"{key} is not a valid attribute of Client.")
+        # saves the modified and updated client dictionary to the file.
+        self.save_clients()
+
+    def delete_client(self, clientid):
+        # Deletes a client from the client dictionary based on their ID Number.
+        # prints the exception if the ID is not found
+        if clientid not in self.clients:
+            raise Exception("Client not found.")
+        # deletes the client from the dictionary.
+        del self.clients[clientid]
+        # saves the updated client dictionary to the file.
+        self.save_clients()
+
+    def get_client(self, clientid):
+        # Gets a client object by their ID Number.
+        if clientid not in self.clients:
+            raise Exception("Client not found.")
+        return self.clients[clientid]
+
+    def display_client(self, clientid):
+        # prints the information of the client
+        client = self.get_client(clientid)
+        print(f"Client ID: {client.clientid}")
+        print(f"Full name: {client.full_name}")
+        print(f"Address: {client.address}")
+        print(f"Contact Information: {client.contactinfo}")
+        print(f"Budget: {client.budget}")
+
+
+class ClientGUI:  # GUI interface for interacting with client data.
+    def __init__(self, master):  # Sets up the GUI layout and adds it to the main GUI window
+        self.master = master
+        self.client_manager = ClientManager()
+        self.add_widgets()
+
+    def add_widgets(self):
+        # Adds labels, entries, and buttons for the client GUI.
+        tk.Label(self.master, text="Client ID:").grid(row=0, column=0, sticky="w")
+        self.clientid_entry = tk.Entry(self.master)
+        self.clientid_entry.grid(row=0, column=1, sticky="we")
+
+        tk.Label(self.master, text="Full name:").grid(row=1, column=0, sticky="w")
+        self.full_name_entry = tk.Entry(self.master)
+        self.full_name_entry.grid(row=1, column=1, sticky="we")
+
+        tk.Label(self.master, text="Address:").grid(row=2, column=0, sticky="w")
+        self.address_entry = tk.Entry(self.master)
+        self.address_entry.grid(row=2, column=1, sticky="we")
+
+        tk.Label(self.master, text="Budget:").grid(row=4, column=0, sticky="w")
+        self.budget_entry = tk.Entry(self.master)
+        self.budget_entry.grid(row=4, column=1, sticky="we")
+
+        tk.Label(self.master, text="Contact Information:").grid(row=3, column=0, sticky="w")
+        self.contactinfo_entry = tk.Entry(self.master)
+        self.contactinfo_entry.grid(row=3, column=1, sticky="we")
+
+
+        self.add_button = tk.Button(
+            self.master, text="Add Client", command=self.add_client
+        )
+        self.add_button.grid(row=5, column=0, sticky="we")
+
+        self.modify_button = tk.Button(
+            self.master, text="Modify Client", command=self.modify_client
+        )
+        self.modify_button.grid(row=5, column=1, sticky="we")
+
+        self.delete_button = tk.Button(
+            self.master, text="Delete Client", command=self.delete_client
+        )
+        self.delete_button.grid(row=6, column=0, sticky="we")
+
+        self.display_button = tk.Button(
+            self.master, text="Display Client", command=self.display_client
+        )
+        self.display_button.grid(row=6, column=1, sticky="we")
+
+    def add_client(self):
+        # Adds a client by taking the client's information that we entered in the GUI Field.
+        clientid = self.clientid_entry.get()
+        full_name = self.full_name_entry.get()
+        address = self.address_entry.get()
+        contactinfo = self.contactinfo_entry.get()
+        budget = self.budget_entry.get()
+        try:
+            # convert budget to float rather than integer
+            budget = float(budget)
+            # Adding a new Client object with the given information and it adds it using the client manager.
+            client = Client(clientid, full_name, address, contactinfo, budget)
+            self.client_manager.add_client(client)
+            # Shows the user a box that says it either succeeded or an error was made
+            messagebox.showinfo("Success", "Client added successfully.")
+        except ValueError as e:
+            messagebox.showerror("Error", f"Invalid input: {e}")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def delete_client(self):
+        # Removes a client by taking the client's information that we entered in the GUI Field.
+        clientid = self.clientid_entry.get()
+        try:
+            # deletes the client by using the client manager.
+            self.client_manager.delete_client(clientid)
+            # Shows the user a box that says whether he succeeded or an error was made.
+            messagebox.showinfo("Success", "Client deleted successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def modify_client(self):
+        # Gets client information from the entries and modifies the information of the client.
+        clientid = self.clientid_entry.get()
+        full_name = self.full_name_entry.get()
+        address = self.address_entry.get()
+        contactinfo = self.contactinfo_entry.get()
+        budget = self.budget_entry.get()
+        try:
+            # convert budget to float rather than integer
+            budget = float(budget)
+            # changes and modifies the client information by using the client manager.
+            self.client_manager.modify_client(
+                clientid,
+                full_name=full_name,
+                address=address,
+                contactinfo=contactinfo,
+                budget=budget,
+            )
+            # Shows the user a box that says he either succeeded or an error was made
+            messagebox.showinfo("Success", "Client modified successfully.")
+        except ValueError as e:
+            messagebox.showerror("Error", f"Invalid input: {e}")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def display_client(self):
+        clientid = self.clientid_entry.get()
+        try:
+            client = self.client_manager.get_client(clientid)
+            info = f"Client ID: {client.clientid}\nFull name: {client.full_name}\nAddress: {client.address}\nContact Information: {client.contactinfo}\nBudget: {client.budget}"
+            messagebox.showinfo("Client Details", info)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+
+# Employee GUI
+
+EMPLOYEE_FILENAME = "employees.bin"
+
+
+class EmployeeManager: # Manages operations related to employees
+    def __init__(self):
+        # Upon initialization, load existing employees from storage.
+        self.employees = self.load_employees()
+
+    def load_employees(self):
+        if os.path.exists(EMPLOYEE_FILENAME):  # Checks if the employee data file exists and returns its content.
+            with open(EMPLOYEE_FILENAME, "rb") as file:  # Deserialize and return the employee data from the file.
+                return pickle.load(file)
+        return {}  # Return an empty dictionary if the file doesn't exist.
+
+    def save_employees(self):
+        with open(EMPLOYEE_FILENAME, "wb") as file:  # Serializes and saves the employee data to a file.
+            pickle.dump(self.employees, file)
+
+    def add_employee(self, employee):
+        if employee.emp_id in self.employees:  # Adds a new employee to the dictionary
+            raise Exception("Employee ID already exists.") #prints exception if ID already exists
+        self.employees[employee.emp_id] = employee  # Insert the new employee into the employee dictionary.
+        self.save_employees()
+    def delete_emp(self, emp_id):
+        if emp_id not in self.employees:  # Deletes an employee from the dictionary based on their ID number.
+            raise Exception("Employee not found.")
+        del self.employees[emp_id]  # Remove the employee from the dictionary.
+        self.save_employees()
+    def modify_emp(
+            self,
+            emp_id,
+            full_name=None,
+            department=None,
+            job_title=None,
+            basic_salary=None,
+            age=None,
+            dob=None,
+            passportinfo=None,
+            manager_id=None,
+    ):
+        # Changes or modifies the attributes of an existing employee depending on the information given.
+        if emp_id not in self.employees:
+            raise Exception("Employee not found.")  # gets the employee from the dictionary.
+        employee = self.employees[emp_id]
+        # updates the employee's attributes if new values are given
+        if full_name is not None:
+            employee.full_name = full_name
+        if department is not None:
+            employee.department = department
+        if job_title is not None:
+            employee.job_title = job_title
+        if basic_salary is not None:
+            employee.basic_salary = basic_salary
+        if age is not None:
+            employee.age = age
+        if dob is not None:
+            employee.dob = dob
+        if passportinfo is not None:
+            employee.passportinfo = passportinfo
+        if manager_id is not None:
+            employee.manager_id = manager_id
+        self.save_employees()
+
+    def get_employee(self, emp_id):  # Gets an employee object by their ID number.
+        if emp_id not in self.employees:
+            raise Exception("Employee not found.")  # Return the employee object with the matching ID.
+        return self.employees[emp_id]
+
+    def display_emp(self, emp_id):  # print the information of an employee depending on the ID Number.
+        employee = self.get_employee(emp_id)  # Gets the employee object using the get_employee method.
+        print(f"Full name: {employee.full_name}")
+        print(f"ID Number: {employee.emp_id}")
+        print(f"Department: {employee.department}")
+        print(f"Job Title: {employee.job_title}")
+        print(f"Basic Salary: {employee.basic_salary}")
+        print(f"Age: {employee.age}")
+        print(f"Date of Birth: {employee.dob}")
+        print(f"Passport Information: {employee.passportinfo}")
+        if employee.manager_id:  # checks if the employee has a manager id
+            print(f"Manager ID: {employee.manager_id}") #prints the manager id
+
+
+class EmployeeGUI:
+    def __init__(self, master):
+        self.master = master
+        self.emp_manager = EmployeeManager()
+        self.add_widgets()
+
+    def add_widgets(self):
+        # Adds labels and Entries
+        tk.Label(self.master, text="Employee ID:").grid(row=0, column=0, sticky="w")
+        self.emp_id_entry = tk.Entry(self.master)
+        self.emp_id_entry.grid(row=0, column=1, sticky="we")
+
+        tk.Label(self.master, text="Full name:").grid(row=1, column=0, sticky="w")
+        self.full_name_entry = tk.Entry(self.master)
+        self.full_name_entry.grid(row=1, column=1, sticky="we")
+
+        tk.Label(self.master, text="Department:").grid(row=2, column=0, sticky="w")
+        self.department_entry = tk.Entry(self.master)
+        self.department_entry.grid(row=2, column=1, sticky="we")
+
+        tk.Label(self.master, text="Job Title:").grid(row=3, column=0, sticky="w")
+        self.job_title_entry = tk.Entry(self.master)
+        self.job_title_entry.grid(row=3, column=1, sticky="we")
+
+        tk.Label(self.master, text="Basic Salary:").grid(row=4, column=0, sticky="w")
+        self.basic_salary_entry = tk.Entry(self.master)
+        self.basic_salary_entry.grid(row=4, column=1, sticky="we")
+
+        tk.Label(self.master, text="Age:").grid(row=5, column=0, sticky="w")
+        self.age_entry = tk.Entry(self.master)
+        self.age_entry.grid(row=5, column=1, sticky="we")
+
+        tk.Label(self.master, text="Date of Birth:").grid(row=6, column=0, sticky="w")
+        self.dob_entry = tk.Entry(self.master)
+        self.dob_entry.grid(row=6, column=1, sticky="we")
+
+        tk.Label(self.master, text="Passport Information:").grid(
+            row=7, column=0, sticky="w"
+        )
+        self.passport_entry = tk.Entry(self.master)
+        self.passport_entry.grid(row=7, column=1, sticky="we")
+
+        tk.Label(self.master, text="Manager ID:").grid(row=8, column=0, sticky="w")
+        self.manager_id_entry = tk.Entry(self.master)
+        self.manager_id_entry.grid(row=8, column=1, sticky="we")
+
+        # Adds button to interact with the GUI like adding,modifying and so on
+        self.add_button = tk.Button(
+            self.master, text="Add Employee", command=self.add_employee
+        )
+        self.add_button.grid(row=9, column=0, sticky="we")
+
+        self.modify_button = tk.Button(
+            self.master, text="Modify Employee", command=self.modify_emp
+        )
+        self.modify_button.grid(row=9, column=1, sticky="we")
+
+        self.delete_button = tk.Button(
+            self.master, text="Delete Employee", command=self.delete_emp
+        )
+        self.delete_button.grid(row=10, column=0, sticky="we")
+
+        self.display_button = tk.Button(
+            self.master, text="Display Employee", command=self.display_emp
+        )
+        self.display_button.grid(row=10, column=1, sticky="we")
+
+    def add_employee(self):
+        try:
+            new_employee = Employee(
+                full_name=self.full_name_entry.get(),
+                emp_id=self.emp_id_entry.get(),
+                department=self.department_entry.get(),
+                job_title=self.job_title_entry.get(),
+                basic_salary=self.basic_salary_entry.get(),
+                age=self.age_entry.get(),
+                dob=self.dob_entry.get(),
+                passportinfo=self.passport_entry.get(),
+                manager_id=self.manager_id_entry.get() or None,
+            )
+            self.emp_manager.add_employee(new_employee)
+            messagebox.showinfo("Success", "Employee added successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not add employee: {e}")
+            
+    def modify_emp(self):
+        emp_id = self.emp_id_entry.get()
+        try:
+            self.emp_manager.modify_emp(
+                emp_id,
+                full_name=self.full_name_entry.get(),
+                department=self.department_entry.get(),
+                job_title=self.job_title_entry.get(),
+                basic_salary=self.basic_salary_entry.get(),
+                age=self.age_entry.get(),
+                dob=self.dob_entry.get(),
+                passportinfo=self.passport_entry.get(),
+                manager_id=self.manager_id_entry.get() or None,
+            )
+            messagebox.showinfo("Success", "Employee modified successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not modify employee: {e}")
+
+    def delete_emp(self):
+        emp_id = self.emp_id_entry.get()
+        try:
+            self.emp_manager.delete_emp(emp_id)
+            messagebox.showinfo("Success", "Employee deleted successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not delete employee: {e}")
+
+
+    def display_emp(self):
+        emp_id = self.emp_id_entry.get()
+        try:
+            employee = self.emp_manager.get_employee(emp_id)
+            employee_info = (
+                f"Full name: {employee.full_name}\n"
+                f"Department: {employee.department}\n"
+                f"Job Title: {employee.job_title}\n"
+                f"Basic Salary: {employee.basic_salary}\n"
+                f"Age: {employee.age}\n"
+                f"Date of Birth: {employee.dob}\n"
+                f"Passport Information: {employee.passportinfo}\n"
+                f"Manager ID: {employee.manager_id}"
+            )
+            messagebox.showinfo("Employee Details", employee_info)
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not display employee: {e}")
+
+
+# EVENT PATH
+
+
+EVENT_FILENAME = "events.bin"
+
+
+class EventManager:
+    def __init__(self):
+        self.events = self.load_events()
+
+    def load_events(self):
+        # checks if the event data file exists
+        if os.path.exists(EVENT_FILENAME):
+            with open(EVENT_FILENAME, "rb") as file:
+                # deserializes and returns the event data
+                return pickle.load(file)
+        # Return an empty dictionary if the file does not exist.
+        return {}
+
+    def save_events(self):
+        # serializes the file and saves the event data to it.
+        with open(EVENT_FILENAME, "wb") as file:
+            # serialize the dictionary
+            pickle.dump(self.events, file)
+
+    def add_event(self, event):
+        # Adds a new event and checks if there are any duplicate IDs
+        if event.eventid in self.events:
+            raise Exception("Event ID already exists.")
+        # inserts the new event to events dictionary.
+        self.events[event.eventid] = event
+        # saves the updated events dictionary
+        self.save_events()
+
+    def modify_event(self, eventid, **kwargs):
+        # Modifies the attributes of an existing event based on given information.
+        if eventid not in self.events:
+            raise Exception("Event not found.")
+        # Get the event from the dictionary.
+        event = self.events[eventid]
+        # Update the event's attributes if new values were given.
+        for key, value in kwargs.items():
+            # Check if the event object has the attribute to be modified.
+            if hasattr(event, key):
+                # Set the attribute to the new value given.
+                setattr(event, key, value)
+            else:
+                # Raise an exception if an invalid attribute is specified.
+                raise Exception(f"{key} is not a valid attribute of Event.")
+        # Save the updated events dictionary after modifications.
+        self.save_events()
+
+    def delete_event(self, eventid):
+        # deletes an event from the dictionary based on its ID.
+        if eventid not in self.events:
+            raise Exception("Event not found.")
+        # removes the event from the dictionary.
+        del self.events[eventid]
+        # saves the updated events dictionary.
+        self.save_events()
+
+    def get_event(self, eventid):
+        if eventid not in self.events: # gets an event object by the ID number
+            raise Exception("Event not found.")
+        return self.events[eventid] # returns the event object with the ID number
+
+    def display_event(self, eventid):
+        event = self.get_event(eventid)  # get the event using the get_event
+        print(f"Event ID: {event.eventid}")  # print the event's information
+        print(f"Type: {event.eventtype}")
+        print(f"Theme: {event.theme}")
+        print(f"Date: {event.date}")
+        print(f"Time: {event.time}")
+        print(f"Duration: {event.duration}")
+        print(f"Venue Address: {event.venue_address}")
+        print(f"Client ID: {event.clientid}")
+        print("Guest List:")
+        for guest in event.guestlist:
+            print(f" - {guest}")
+        print(f"Catering Company: {event.catering_company}")
+        print(f"Cleaning Company: {event.cleaning_company}")
+        print(f"Decorations Company: {event.decorations_company}")
+        print(f"Entertainment Company: {event.entertainment_company}")
+        print(f"Furniture Supply Company: {event.furniture_supply_company}")
+        print(f"Invoice: {event.invoice}")
+
+
+class EventGUI:
+    # sets up the GUI layout for the main window
+    def __init__(self, master):
+        self.master = master
+        self.event_manager = EventManager()
+        self.add_widgets()
+
+    # labels for event attributes
+    def add_widgets(self):
+        labels = [
+            "Event ID:",
+            "Type:",
+            "Theme:",
+            "Date:",
+            "Time:",
+            "Duration:",
+            "Venue Address:",
+            "Client ID:",
+            "Catering Company:",
+            "Cleaning Company:",
+            "Decorations Company:",
+            "Guest List",
+            "Entertainment Company",
+            "Furniture Company",
+            "Invoice",
+
+        ]
+        self.entries = {}  # A dictionary that holds the entry widgets that correlate with every label
+        for i, label in enumerate(labels):  # Iterate over the labels to create and place corresponding entry widgets.
+            tk.Label(self.master, text=label).grid(row=i, column=0, sticky="w")
+            entry = tk.Entry(self.master)
+            entry.grid(row=i, column=1, sticky="we")
+            self.entries[label.strip(":")] = entry
+
+        operations = [
+            ("Add Event", self.add_event),  # buttons for adding events and so on
+            ("Modify Event", self.modify_event),
+            ("Delete Event", self.delete_event),
+            ("Display Event", self.display_event),
+        ]
+        for i, (text, command) in enumerate(operations,
+                                            start=len(labels)):  # creates buttons 
+            button = tk.Button(self.master, text=text, command=command)
+            button.grid(row=i, columnspan=2, sticky="we")
+
+    def add_event(self):
+        # Creates a new event by gathering event data that were entered in the entries
+        try:
+            event_data = {key: entry.get() for key, entry in
+                          self.entries.items()}  
+
+            event_data["eventid"] = event_data.pop("Event ID")
+            event_data["eventtype"] = event_data.pop("Type")
+            event_data["theme"] = event_data.pop("Theme")
+            event_data["date"] = event_data.pop("Date")
+            event_data["time"] = event_data.pop("Time")
+            event_data["duration"] = event_data.pop("Duration")
+            event_data["venue_address"] = event_data.pop("Venue Address")
+            event_data["clientid"] = event_data.pop("Client ID")
+            event_data["catering_company"] = event_data.pop("Catering Company")
+            event_data["cleaning_company"] = event_data.pop("Cleaning Company")
+            event_data["decorations_company"] = event_data.pop("Decorations Company")
+            event_data["guestlist"] = event_data.pop("Guest List")
+            event_data["entertainment_company"] = event_data.pop("Entertainment Company")
+            event_data["furniture_supply_company"] = event_data.pop("Furniture Company")
+            event_data["invoice"] = event_data.pop("Invoice")
+
+            new_event = Event(**event_data)
+            self.event_manager.add_event(new_event)
+            messagebox.showinfo("Success", "Event added successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not add event: {e}")
+
+    def delete_event(self):
+        eventid = self.entries[
+            "Event ID"].get()  # Delete the event by getting the event ID from the entry field 
+        try:
+            self.event_manager.delete_event(eventid)  # Deletes the event using the event manager.
+            #Tells the user if there was an error or if it was successful
+            messagebox.showinfo("Success", "Event deleted successfully.")
+        except Exception as e:  
+            messagebox.showerror("Error", f"Could not delete event: {e}")
+
+    def modify_event(
+            self):  # modifes and updates the event by getting the event data and modified data
+        eventid = self.entries["Event ID"].get()
+        updates = {
+            key: entry.get() for key, entry in self.entries.items() if entry.get()
+            # Gathers updates from entries
+        }
+        try:
+            self.event_manager.modify_event(eventid, **updates)
+            messagebox.showinfo("Success", "Event modified successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not modify event: {e}")
+
+    def display_event(self):
+        eventid = self.entries["Event ID"].get()
+        try:
+            event = self.event_manager.get_event(eventid)
+            event_info = "\n".join(
+                f"{key}: {getattr(event, key.lower().replace(' ', '_'), '')}"
+                for key in self.entries
+            )
+            messagebox.showinfo("Event Details", event_info)
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not display event: {e}")
+
+
+GUEST_FILENAME = "guests.bin"
+
+
+class GuestManager:
+    def __init__(self):
+        self.guests = self.load_guests()
+
+    def load_guests(self):
+        # checks if the guest data file exists and returns
+        if os.path.exists(GUEST_FILENAME):
+            with open(GUEST_FILENAME, "rb") as file:
+                # deserializes the file and returns the guest data
+                return pickle.load(file)
+        return {}  # returns an empty dictionary if the file doesn't exist.
+
+    def save_guests(self):
+        # Serializes and saves the guest data to a file.
+        with open(GUEST_FILENAME, "wb") as file:
+            # Serialize the dictionary of guests and write it to the file.
+            pickle.dump(self.guests, file)
+
+    def add_guest(self, guest):
+        # Adds a new guest to the dictionary, checking for duplicate guest IDs.
+        if guest.guestid in self.guests:
+            raise Exception("Guest ID already exists.")
+        # inserts the new guest into the guests dictionary.
+        self.guests[guest.guestid] = guest
+        # saves the updated guests dictionary to storage.
+        self.save_guests()
+
+    def delete_guest(self, guestid):
+        # Deletes a guest from the dictionary based on their guest ID.
+        if guestid not in self.guests:
+            raise Exception("Guest not found.")
+        # Remove the guest from the dictionary.
+        del self.guests[guestid]
+        self.save_guests()
+
+    def modify_guest(self, guestid, **kwargs):
+        # changes or modifies the attributes of a guest based on given information.
+        if guestid not in self.guests:
+            raise Exception("Guest not found.")
+        # Get the guest from the dictionary.
+        guest = self.guests[guestid]
+        for key, value in kwargs.items():
+            if hasattr(guest, key):
+                setattr(guest, key, value)
+            else:
+                raise Exception(f"{key} is not a valid attribute of Guest.")
+        self.save_guests()
+
+    def get_guest(self, guestid):
+        # Gets a guest object by guest ID number.
+        if guestid not in self.guests:
+            raise Exception("Guest not found.")
+        return self.guests[guestid]
+
+    def display_guest(self, guestid):
+        # Outputs the information of a guest to the console based on the guest ID.
+        guest = self.get_guest(guestid)
+        print(f"Guest ID: {guest.guestid}")
+        print(f"Full name: {guest.full_name}")
+        print(f"Address: {guest.address}")
+        print(f"Contact Information: {guest.contactinfo}")
+
+
+class GuestGUI:
+    # GUI for managing guests.
+
+    def __init__(self, master):
+        #  sets up the GUI layout and adds it to the main window
+        self.master = master
+        self.guest_manager = GuestManager()
+        # Run the GUI widgets for managing guests.
+        self.add_widgets()
+
+    def add_widgets(self):
+        # adds widgets like labels and entries for the GUI
+        tk.Label(self.master, text="Guest ID:").grid(row=0, column=0, sticky="w")
+        self.guestid_entry = tk.Entry(self.master)
+        self.guestid_entry.grid(row=0, column=1, sticky="we")
+
+        tk.Label(self.master, text="Full name:").grid(row=1, column=0, sticky="w")
+        self.full_name_entry = tk.Entry(self.master)
+        self.full_name_entry.grid(row=1, column=1, sticky="we")
+
+        tk.Label(self.master, text="Address:").grid(row=2, column=0, sticky="w")
+        self.address_entry = tk.Entry(self.master)
+        self.address_entry.grid(row=2, column=1, sticky="we")
+
+        tk.Label(self.master, text="Contact Information:").grid(row=3, column=0, sticky="w")
+        self.contactinfo_entry = tk.Entry(self.master)
+        self.contactinfo_entry.grid(row=3, column=1, sticky="we")
+
+        # Buttons to add, modify or delete
+        self.add_button = tk.Button(
+            self.master, text="Add Guest", command=self.add_guest
+        )
+        self.add_button.grid(row=4, column=0, sticky="we")
+
+        self.modify_button = tk.Button(
+            self.master, text="Modify Guest", command=self.modify_guest
+        )
+        self.modify_button.grid(row=4, column=1, sticky="we")
+
+        self.delete_button = tk.Button(
+            self.master, text="Delete Guest", command=self.delete_guest
+        )
+        self.delete_button.grid(row=5, column=0, sticky="we")
+
+
+        self.display_button = tk.Button(
+            self.master, text="Display Guest", command=self.display_guest
+        )
+        self.display_button.grid(row=5, column=1, sticky="we")
+
+    def add_guest(self):
+        # gathers the guest data from the entries and makes a new guest record.
+        guestid = self.guestid_entry.get()
+        full_name = self.full_name_entry.get()
+        address = self.address_entry.get()
+        contactinfo = self.contactinfo_entry.get()
+        try:
+            new_guest = Guest(guestid, full_name, address, contactinfo)
+            # Add the new guest to the guest manager.
+            self.guest_manager.add_guest(new_guest)
+            # Shows a box to the user which says that it was successful or an error occurred
+            messagebox.showinfo("Success", "Guest added successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not add guest: {e}")
+
+    def delete_guest(self):
+        guestid = self.guestid_entry.get()
+        try:
+            self.guest_manager.delete_guest(guestid)
+            messagebox.showinfo("Success", "Guest deleted successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not delete guest: {e}")
+
+    def modify_guest(self):
+        guestid = self.guestid_entry.get()
+        full_name = self.full_name_entry.get()
+        address = self.address_entry.get()
+        contactinfo = self.contactinfo_entry.get()
+        try:
+            self.guest_manager.modify_guest(
+                guestid, full_name=full_name, address=address, contactinfo=contactinfo
+            )
+            messagebox.showinfo("Success", "Guest modified successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not modify guest: {e}")
+
+    def display_guest(self):
+        guestid = self.guestid_entry.get()
+        try:
+            guest = self.guest_manager.get_guest(guestid)
+            guest_info = f"Guest ID: {guest.guestid}\nFull name: {guest.full_name}\nAddress: {guest.address}\nContact Information: {guest.contactinfo}"
+            messagebox.showinfo("Guest Details", guest_info)
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not display guest: {e}")
+
+
+SUPPLIER_FILENAME = "suppliers.bin"
+
+
+class SupplierManager:
+    def __init__(self):
+        self.suppliers = self.load_suppliers()
+
+    def load_suppliers(self):
+        # Checks if the supplier data file exists and returns it.
+        if os.path.exists(SUPPLIER_FILENAME):
+            with open(SUPPLIER_FILENAME, "rb") as file:
+                # Deserialize and return the supplier data from the file.
+                return pickle.load(file)
+        # Return an empty dictionary if the file doesn't exist.
+        return {}
+
+    def save_suppliers(self):
+        # Serializes and saves the supplier data to a file.
+        with open(SUPPLIER_FILENAME, "wb") as file:
+            # Serialize the dictionary of suppliers and write it to the file.
+            pickle.dump(self.suppliers, file)
+
+    def add_supplier(self, supplier):
+        # Adds a new supplier to the dictionary, checking for duplicate supplier IDs.
+        if supplier.supplier_id in self.suppliers:
+            raise Exception("Supplier ID already exists.")
+        # Insert the new supplier into the suppliers dictionary.
+        self.suppliers[supplier.supplier_id] = supplier
+        # Save the updated suppliers dictionary to storage.
+        self.save_suppliers()
+
+    def delete_supplier(self, supplier_id):
+        # Deletes a supplier from the dictionary based on their supplier ID.
+        if supplier_id not in self.suppliers:
+            raise Exception("Supplier not found.")
+        # Remove the supplier from the dictionary.
+        del self.suppliers[supplier_id]
+        # Save the updated suppliers dictionary to storage.
+        self.save_suppliers()
+
+    def modify_supplier(self, supplier_id, **kwargs):
+        # Modifies the attributes of an existing supplier based on given information.
+        if supplier_id not in self.suppliers:
+            raise Exception("Supplier not found.")
+        # Get the supplier from the dictionary.
+        supplier = self.suppliers[supplier_id]
+        # Update the supplier's attributes if new values were given.
+        for key, value in kwargs.items():
+            if hasattr(supplier, key):
+                setattr(supplier, key, value)
+            else:
+                raise Exception(f"{key} is not a valid attribute of Supplier.")
+        # Save the updated suppliers dictionary after modifications.
+        self.save_suppliers()
+
+    def get_supplier(self, supplier_id):
+        # Gets a supplier object by their unique supplier ID.
+        if supplier_id not in self.suppliers:
+            raise Exception("Supplier not found.")
+        return self.suppliers[supplier_id]
+
+    def display_supplier(self, supplier_id):
+        # Outputs the information of a supplier to the console based on the supplier ID.
+        supplier = self.get_supplier(supplier_id)
+        print(f"Supplier ID: {supplier.supplier_id}")
+        print(f"Full name: {supplier.full_name}")
+        print(f"Address: {supplier.address}")
+        print(f"Contact Information: {supplier.contactinfo}")
+        print(f"Service Provided: {supplier.service_provided}")
+
+
+class SupplierGUI:
+    def __init__(self, master):
+        self.master = master
+        self.supplier_manager = SupplierManager()
+        self.add_widgets()
+
+    def add_widgets(self):
+        # Supplier ID
+        tk.Label(self.master, text="Supplier ID:").grid(row=0, column=0, sticky="w")
+        self.supplier_id_entry = tk.Entry(self.master)
+        self.supplier_id_entry.grid(row=0, column=1, sticky="we")
+
+        # Setup for the Supplier Full name input.
+        tk.Label(self.master, text="Full name:").grid(row=1, column=0, sticky="w")
+        self.full_name_entry = tk.Entry(self.master)
+        self.full_name_entry.grid(row=1, column=1, sticky="we")
+
+        # Setup for the Address input.
+        tk.Label(self.master, text="Address:").grid(row=2, column=0, sticky="w")
+        self.address_entry = tk.Entry(self.master)
+        self.address_entry.grid(row=2, column=1, sticky="we")
+
+        # Setup for the Contact Information input.
+        tk.Label(self.master, text="Contact Information:").grid(row=3, column=0, sticky="w")
+        self.contactinfo_entry = tk.Entry(self.master)
+        self.contactinfo_entry.grid(row=3, column=1, sticky="we")
+
+        # Setup for the Service given input.
+        tk.Label(self.master, text="Service Provided:").grid(
+            row=4, column=0, sticky="w"
+        )
+        self.service_provided_entry = tk.Entry(self.master)
+        self.service_provided_entry.grid(row=4, column=1, sticky="we")
+
+        # Buttons for operations, linked to their respective functions.
+        self.add_button = tk.Button(
+            self.master, text="Add Supplier", command=self.add_supplier
+        )
+        self.add_button.grid(row=5, column=0, sticky="we")
+
+        self.modify_button = tk.Button(
+            self.master, text="Modify Supplier", command=self.modify_supplier
+        )
+        self.modify_button.grid(row=5, column=1, sticky="we")
+
+        self.delete_button = tk.Button(
+            self.master, text="Delete Supplier", command=self.delete_supplier
+        )
+        self.delete_button.grid(row=6, column=0, sticky="we")
+
+
+        self.display_button = tk.Button(
+            self.master, text="Display Supplier", command=self.display_supplier
+        )
+        self.display_button.grid(row=6, column=1, sticky="we")
+
+    def add_supplier(self):
+        # Collects the supplier data from the entry fields and attempts to create a new supplier record.
+        supplier_id = self.supplier_id_entry.get()
+        full_name = self.full_name_entry.get()
+        address = self.address_entry.get()
+        contactinfo = self.contactinfo_entry.get()
+        service_provided = self.service_provided_entry.get()
+        try:
+            new_supplier = Supplier(
+                supplier_id, full_name, address, contactinfo, service_provided
+                # Instantiate a new Supplier object with data from the input fields.
+            )
+            self.supplier_manager.add_supplier(
+                new_supplier)  # Add the newly created supplier to the supplier management system.
+            messagebox.showinfo("Success", "Supplier added successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not add supplier: {e}")
+
+    def delete_supplier(self):
+        supplier_id = self.supplier_id_entry.get()  # Gets the supplier ID from the entry field and attempts to delete the supplier.
+        try:
+            self.supplier_manager.delete_supplier(supplier_id)
+            messagebox.showinfo("Success", "Supplier deleted successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not delete supplier: {e}")
+
+    def modify_supplier(self):
+        supplier_id = self.supplier_id_entry.get()
+        full_name = self.full_name_entry.get()
+        address = self.address_entry.get()
+        contactinfo = self.contactinfo_entry.get()
+        service_provided = self.service_provided_entry.get()
+        try:
+            self.supplier_manager.modify_supplier(
+                supplier_id,
+                full_name=full_name,
+                address=address,
+                contactinfo=contactinfo,
+                service_provided=service_provided,
+            )
+            messagebox.showinfo("Success", "Supplier modified successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not modify supplier: {e}")
+
+    def display_supplier(self):
+        supplier_id = self.supplier_id_entry.get()
+        try:
+            supplier = self.supplier_manager.get_supplier(supplier_id)
+            supplier_info = f"Supplier ID: {supplier.supplier_id}\nFull name: {supplier.full_name}\nAddress: {supplier.address}\nContact Information: {supplier.contactinfo}\nService Provided: {supplier.service_provided}"
+            messagebox.showinfo("Supplier Details", supplier_info)
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not display supplier: {e}")
+
+
+VENUE_FILENAME = "venues.bin"
+
+
+class VenueManager:
+    def __init__(self):
+        self.venues = self.load_venues()
+
+    def load_venues(self):
+        # checks if the venue data file exists and returns.
+        if os.path.exists(VENUE_FILENAME):
+            with open(VENUE_FILENAME, "rb") as file:
+                # Deserialize the venue data and returns.
+                return pickle.load(file)
+        # returns an empty dictionary if the file doesn't exist.
+        return {}
+
+    def save_venues(self):
+        # serializes the venue data and saves it as a file.
+        with open(VENUE_FILENAME, "wb") as file:
+            # serializes the dictionary of venues and writes it.
+            pickle.dump(self.venues, file)
+
+    def add_venue(self, venue):
+        # Adds a new venue to the dictionary
+        if venue.idvenue in self.venues:
+            raise Exception("Venue ID already exists.") #prints if there are duplicate IDs
+        # adds and inserts the new venue into the venue dictionary.
+        self.venues[venue.idvenue] = venue
+        self.save_venues()
+
+    def delete_venue(self, idvenue):
+        # Deletes a venue from the dictionary based on its ID.
+        if idvenue not in self.venues:
+            raise Exception("Venue not found.")
+        # Remove the venue from the dictionary.
+        del self.venues[idvenue]
+        # Save the updated venues dictionary to storage.
+        self.save_venues()
+
+    def modify_venue(self, idvenue, **kwargs):
+        # changes and modifies the attributes of a venue based on given information.
+        if idvenue not in self.venues:
+            raise Exception("Venue not found.")
+        # Get the venue from the dictionary.
+        venue = self.venues[idvenue]
+        # updates the venue's attributes if new information were given.
+        for key, value in kwargs.items():
+            if hasattr(venue, key):
+                setattr(venue, key, value)
+            else:
+                raise Exception(f"{key} is not a valid attribute of Venue.")
+        self.save_venues()
+
+    def get_venue(self, idvenue):
+        # Gets a venue object by venue ID.
+        if idvenue not in self.venues:
+            raise Exception("Venue not found.")
+        return self.venues[idvenue]
+
+    def display_venue(self, idvenue):
+        # prints out and displays the information of a venue
+        venue = self.get_venue(idvenue)
+        print(f"Venue ID: {venue.idvenue}")
+        print(f"Full name: {venue.full_name}")
+        print(f"Address: {venue.address}")
+        print(f"Contact: {venue.contact}")
+        print(f"Minimum Guests: {venue.min_guests}")
+        print(f"Maximum Guests: {venue.max_guests}")
+
+
+class VenueGUI:
+    def __init__(self, master):
+        self.master = master
+        self.venue_manager = VenueManager()
+        self.add_widgets()
+
+    def add_widgets(self):
+        # adds labels and entries
+        tk.Label(self.master, text="Venue ID:").grid(row=0, column=0, sticky="w")
+        self.idvenue_entry = tk.Entry(self.master)
+        self.idvenue_entry.grid(row=0, column=1, sticky="we")
+
+        tk.Label(self.master, text="Venue name:").grid(row=1, column=0, sticky="w")
+        self.venue_name_entry = tk.Entry(self.master)
+        self.venue_name_entry.grid(row=1, column=1, sticky="we")
+
+        tk.Label(self.master, text="Address:").grid(row=2, column=0, sticky="w")
+        self.address_entry = tk.Entry(self.master)
+        self.address_entry.grid(row=2, column=1, sticky="we")
+
+        tk.Label(self.master, text="Contact:").grid(row=3, column=0, sticky="w")
+        self.contact_entry = tk.Entry(self.master)
+        self.contact_entry.grid(row=3, column=1, sticky="we")
+
+        tk.Label(self.master, text="Minimum Guests:").grid(row=4, column=0, sticky="w")
+        self.min_guests_entry = tk.Entry(self.master)
+        self.min_guests_entry.grid(row=4, column=1, sticky="we")
+
+        tk.Label(self.master, text="Maximum Guests:").grid(row=5, column=0, sticky="w")
+        self.max_guests_entry = tk.Entry(self.master)
+        self.max_guests_entry.grid(row=5, column=1, sticky="we")
+
+        # adds button to interact like adding a venue and so on
+        self.add_button = tk.Button(
+            self.master, text="Add Venue", command=self.add_venue
+        )
+        self.add_button.grid(row=6, column=0, sticky="we")
+
+
+        self.modify_button = tk.Button(
+            self.master, text="Modify Venue", command=self.modify_venue
+        )
+        self.modify_button.grid(row=6, column=1, sticky="we")
+
+        self.delete_button = tk.Button(
+            self.master, text="Delete Venue", command=self.delete_venue
+        )
+        self.delete_button.grid(row=7, column=0, sticky="we")
+
+
+        self.display_button = tk.Button(
+            self.master, text="Display Venue", command=self.display_venue
+        )
+        self.display_button.grid(row=7, column=1, sticky="we")
+
+    def add_venue(self):
+        # Collects venue data from the entry fields and attempts to create a new venue record.
+        idvenue = self.idvenue_entry.get()
+        venue_name = self.venue_name_entry.get()
+        address = self.address_entry.get()
+        contact = self.contact_entry.get()
+        min_guests = self.min_guests_entry.get()
+        max_guests = self.max_guests_entry.get()
+        try:
+            # Instantiate a new Venue object with data from the input fields.
+            new_venue = Venue(
+                idvenue, venue_name, address, contact, int(min_guests), int(max_guests)
+            )
+            # Add the newly created venue to the venue management system.
+            self.venue_manager.add_venue(new_venue)
+            # Inform the user of successful venue addition.
+            messagebox.showinfo("Success", "Venue added successfully.")
+        except Exception as e:
+            # In case of any errors, display an error message.
+            messagebox.showerror("Error", f"Could not add venue: {e}")
+    def modify_venue(self):
+        # updates the venue by using the venue id to collect the modified data from the entries
+        idvenue = self.idvenue_entry.get()
+        venue_name = self.venue_name_entry.get()
+        address = self.address_entry.get()
+        contact = self.contact_entry.get()
+        min_guests = self.min_guests_entry.get()
+        max_guests = self.max_guests_entry.get()
+        try:
+            # It modifies the venue information using the new information
+            self.venue_manager.modify_venue(
+                idvenue,
+                full_name=venue_name,
+                address=address,
+                contact=contact,
+                min_guests=int(min_guests),
+                max_guests=int(max_guests),
+            )
+            # tells the user if the task was successful or if there was an error
+            messagebox.showinfo("Success", "Venue modified successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not modify venue: {e}")
+
+    def delete_venue(self):
+        # Deletes the venue by getting the venue ID from the entries
+        idvenue = self.idvenue_entry.get()
+        try:
+            # Deletes the venue using the venue manager.
+            self.venue_manager.delete_venue(idvenue)
+            # tells the user if the task was successful or if an error was made
+            messagebox.showinfo("Success", "Venue deleted successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not delete venue: {e}")
+
+
+
+    def display_venue(self):
+        # displays information about the venue by geting the venue ID from the entries
+        idvenue = self.idvenue_entry.get()
+        try:
+            # gets the venue object using venue manager.
+            venue = self.venue_manager.get_venue(idvenue)
+            # the venue's information get compiled into a formatted string.
+            venue_info = f"Venue ID: {venue.idvenue}\nFull name: {venue.full_name}\nAddress: {venue.address}\nContact: {venue.contact}\nMinimum Guests: {venue.min_guests}\nMaximum Guests: {venue.max_guests}"
+            # displays the venue information and displays an error message if there was and error
+            messagebox.showinfo("Venue Details", venue_info)
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not display venue: {e}")
+
+
+class EventManagerApp(tk.Tk):
+    # Class for the Event Company Manager system
+
+    def __init__(self):
+        super().__init__()
+        self.title("Events Company Manager System")
+        self.geometry("500x500")
+        self.tab_control = ttk.Notebook(self)  # adds tab to the interface.
+        self.init_tabs()  # Run tabs for different sections.
+        self.tab_control.pack(expand=1, fill="both")
+
+    def init_tabs(self):
+        # added different tabs to manage different areas like managing events, guests, photographers and so on.
+        self.client_tab = ttk.Frame(self.tab_control)
+        self.client_gui = ClientGUI(self.client_tab)
+        self.client_tab.pack(fill="both", expand=True)
+        self.tab_control.add(self.client_tab, text="Clients")
+
+        self.employee_tab = ttk.Frame(self.tab_control)
+        self.employee_gui = EmployeeGUI(self.employee_tab)
+        self.employee_tab.pack(fill="both", expand=True)
+        self.tab_control.add(self.employee_tab, text="Employees")
+
+        self.supplier_tab = ttk.Frame(self.tab_control)
+        self.supplier_gui = SupplierGUI(self.supplier_tab)
+        self.supplier_tab.pack(fill="both", expand=True)
+        self.tab_control.add(self.supplier_tab, text="Suppliers")
+
+        # Managing Photographer
+        self.photographer_tab = ttk.Frame(self.tab_control)
+        self.photographer_gui = PhotographerGUI(self.photographer_tab)
+        self.photographer_tab.pack(fill="both", expand=True)
+        self.tab_control.add(self.photographer_tab, text="Photographer")
+
+        self.event_tab = ttk.Frame(self.tab_control)
+        self.event_gui = EventGUI(self.event_tab)
+        self.event_tab.pack(fill="both", expand=True)
+        self.tab_control.add(self.event_tab, text="Events")
+
+        self.venue_tab = ttk.Frame(self.tab_control)
+        self.venue_gui = VenueGUI(self.venue_tab)
+        self.venue_tab.pack(fill="both", expand=True)
+        self.tab_control.add(self.venue_tab, text="Venues")
+
+        self.guest_tab = ttk.Frame(self.tab_control)
+        self.guest_gui = GuestGUI(self.guest_tab)
+        self.guest_tab.pack(fill="both", expand=True)
+        self.tab_control.add(self.guest_tab, text="Guests")
+
+    # estimating how many Photographer are need which depends on the number of maximum guests
+    def needed_photographers(self, venue):
+        # Photographer hired for every 60 guests
+        return venue.max_guests // 60
+
+
+class PhotographerGUI:
+    # GUI that is used to manage Photographers
+
+    def __init__(self, master):
+        self.master = master
+        self.add_widgets()
+
+    def add_widgets(self):
+        tk.Label(self.master, text="Assign Venue(ID):").grid(row=1, column=0, sticky="w")
+        self.assigned_idvenue_entry = tk.Entry(self.master)
+        self.assigned_idvenue_entry.grid(row=1, column=1, sticky="we")
+
+        self.add_button = tk.Button(self.master, text="Add Photographer", command=self.add_photographer)
+        self.add_button.grid(row=3, column=0, columnspan=2, sticky="we")
+
+    def load_file_venue(self):
+        try:
+            with open(VENUE_FILENAME, 'rb') as file:
+                return pickle.load(file)
+        except FileNotFoundError:
+            return {}
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load venues: {e}")
+            return {}
+
+    def add_photographer(self):
+        # add Photographer to the system.
+        try:
+            idvenue = self.assigned_idvenue_entry.get()
+
+            # load venues everytime we add Photographer so we can get the latest updated list.
+            self.venues = self.load_file_venue()
+
+            assignVenue = self.venues.get(idvenue)
+            if assignVenue is None:
+                messagebox.showerror("Error", "Assigned venue ID does not exist.")
+                return
+
+            Photographer(assignVenue)
+            messagebox.showinfo("Success", "Photographer added successfully.")
+        except ValueError:
+            messagebox.showerror("Error", "Photographer Assigned Venue must be a number")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+
+if __name__ == "__main__":
+    app = EventManagerApp()
+    app.mainloop()
